@@ -15,7 +15,24 @@ const PRIVATE_APP_ACCESS = process.env.ACCESS_TOKEN;
 // TODO: ROUTE 1 - Create a new app.get route for the homepage to call your custom object data. Pass this data along to the front-end and create a new pug template in the views folder.
 
 app.get('/', async (req, res) => {
-    res.send("Homepage");
+    const url = 'https://api.hubapi.com/crm/v3/objects/2-141285380';
+    const headers = {
+        Authorization: `Bearer ${PRIVATE_APP_ACCESS}`,
+        'Content-Type': 'application/json'
+    };
+    const params = {
+        properties: 'name,genre,rating',
+        limit: 10
+    };
+
+    try {
+        const response = await axios.get(url, { headers, params });
+        const movies = response.data.results;
+        res.render('homepage', { title: 'Custom Object Table', movies });
+    } catch (err) {
+        console.error(err);
+        res.send("Something went wrong fetching the data");
+    }
 });
 
 // TODO: ROUTE 2 - Create a new app.get route for the form to create or update new custom object data. Send this data along in the next route.
@@ -46,7 +63,7 @@ app.post('/update-cobj', async (req, res) => {
         res.redirect('/');
     } catch (err) {
         console.error(err);
-        res.status(500).send('Something went wrong');
+        res.status(500).send('Something went wrong sending the data');
     }
 });
 
