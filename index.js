@@ -27,7 +27,27 @@ app.get('/update-cobj', (req, res) => {
 // TODO: ROUTE 3 - Create a new app.post route for the custom objects form to create or update your custom object data. Once executed, redirect the user to the homepage.
 
 app.post('/update-cobj', async (req, res) => {
-    res.status(200).send('Send Update to Hubspot');
+    const url = 'https://api.hubapi.com/crm/v3/objects/2-141285380';
+    const headers = {
+        Authorization: `Bearer ${PRIVATE_APP_ACCESS}`,
+        'Content-Type': 'application/json'
+    };
+
+    const movie = {
+        properties: {
+            name: req.body.name,
+            genre: req.body.genre,
+            rating: req.body.rating
+        }
+    };
+
+    try {
+        await axios.post(url, movie, { headers });
+        res.redirect('/');
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Something went wrong');
+    }
 });
 
 /** 
